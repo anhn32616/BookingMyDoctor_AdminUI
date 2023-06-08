@@ -1,0 +1,241 @@
+.limiter {
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    width: 100vw;
+    height: 100vh;
+    /* background-color: #ebeeef; */
+    /* background-image: linear-gradient(to right top, #d16ba5, #ac619e, #875792, #644c82, #44416f, #394b79, #2c5580, #1d5e85, #1183a8, #0baac7, #2fd3df, #5ffbf1); */
+    /* background-image: linear-gradient(to right top, #33202b, #4c3e4a, #665e69, #837f89, #a2a2a9, #a7a9b0, #acb1b7, #b1b8be, #98a5ac, #7e9399, #668184, #4f706e); */
+    background-image: linear-gradient(to right top, #33202b, #5a3a40, #805851, #a27a62, #bba276, #b4ad7d, #acb888, #a2c397, #86af90, #6f9a87, #5d857c, #4f706e);
+}
+.limiter .container-login100 {
+    height: 100%;
+    width: 500px;
+    margin: auto;
+    display: flex;
+    /* width: 500px;
+    margin: auto;
+    background-color: white;
+    border-radius: 10px; */
+}
+
+.limiter .wrap-login100 {
+    height: 500px;
+    width: 100%;
+    margin: auto;
+    background-color: white;
+    border-radius: 20px;
+}
+
+.limiter .login100-form-title {
+    position: relative;
+    height: 35%;
+    width: 100%;
+    z-index: 1;
+    background-image: url(https://wallpapers.com/images/high/general-surgery-hd-oics-bxnj4pzyl6l1ikkp.webp); 
+    background-size: cover; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+}
+
+.limiter .login100-form-title::before {
+    content: "";
+    display: block;
+    position: absolute;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(44, 77, 94, 0.752);
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+}
+
+.limiter .login100-form-title-1 {
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size: 30px;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.limiter .validate-form {
+    width: 100%;
+    height: 65%;
+    padding: 50px 20px;
+    display: flex;
+    flex-direction: column;
+    font-family: Poppins-Regular, sans-serif;
+}
+
+.limiter .wrap-input100 {
+    width: 100%;
+    font-size: 15px;
+    color: #3b3939;
+    display: block;
+    width: 100%;
+    background: transparent;
+    padding: 0 5px;
+}
+
+.limiter .input100 {
+    width: 100%;
+    font-size: 18px;
+    color: #3b3939;
+    display: block;
+    width: 100%;
+    /* background: transparent; */
+    padding: 5px;
+}
+
+.limiter input {
+    outline: none;
+    border: none;
+}
+
+.limiter .wrap-input100 {
+    width: 100%;
+    position: relative;
+    border-bottom: 1px solid #b2b2b2;
+    margin: 10px 0;
+}
+
+.limiter .w-full {
+    width: 100%;
+}
+
+.limiter .p-b-30 {
+    padding-bottom: 30px;
+}
+
+.limiter .flex-sb-m {
+    display: flex;
+    justify-content: space-between
+}
+
+.limiter .label-checkbox100 {
+    font-size: 15px;
+    color: #777474;
+    display: block;
+    position: relative;
+    padding-left: 6px;
+    cursor: pointer;
+    margin-left: 23px;
+}
+
+.limiter .contact100-form-checkbox {
+    display: flex;
+} 
+
+.limiter .txt1 {
+    font-size: 15px;
+    color: #777474;
+    text-decoration: none;
+}
+
+.limiter input::placeholder{
+    -webkit-text-fill-color: #9e9999;
+}
+
+.limiter input:-webkit-autofill{
+    -webkit-text-fill-color: #3b3939;
+}
+  
+.limiter /* Change the white to any color */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active{
+    -webkit-box-shadow: 0 0 0 30px white inset;
+}
+
+/* .limiter input::-webkit-input-placeholder {
+    -webkit-background-origin: b;
+} */
+
+.limiter .label-checkbox100::before {
+    content: "\2713";
+    font-size: 16px;
+    font-weight: 900;
+    color: transparent;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 2px;
+    background: #fff;
+    border: 1px solid #b0afaf;
+    left: -20px;
+    top: 43%;
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+.limiter .input-checkbox100 {
+    display: none;
+}
+
+.limiter .input-checkbox100:checked + .label-checkbox100::before {
+    color: #186d09;
+}
+
+.limiter .flex-sb-m {
+    margin-top: 10px;
+}
+
+.limiter .login100-form-btn {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px;
+    min-width: 160px;
+    height: 50px;
+    background-color: #57b846;
+    border-radius: 25px;
+    font-size: 16px;
+    color: #fff;
+    line-height: 1.2;
+    -webkit-transition: all 0.4s;
+    -o-transition: all 0.4s;
+    -moz-transition: all 0.4s;
+    transition: all 0.4s;
+    border: none;
+    cursor: pointer;
+    margin: auto;
+}
+
+.limiter .login100-form-btn:hover {
+    background-color: #333333;
+}
+
+.limiter .message-error {
+    color: #ff0000eb;
+    font-size: 13px;
+    margin: 0 10px;
+}
+
+.limiter .input-password {
+    position: relative;
+}
+.limiter .eye-icon {
+    position: absolute;
+    bottom: 7px;
+    right: 8px;
+    cursor: pointer;
+}
