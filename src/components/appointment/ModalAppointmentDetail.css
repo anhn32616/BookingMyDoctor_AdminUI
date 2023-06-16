@@ -1,0 +1,18 @@
+.appointment-modal {
+    max-width: 600px;
+}
+
+.appointment-info {
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+}
+
+.info-label {
+    font-weight: bold;
+}
+
+/* .info-label::after {
+    content: ':';
+    margin-right: 4px;
+} */

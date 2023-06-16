@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import './Login.css'
-import axios from 'axios';
 import authApi from '../../api/authApi';
 import { toast } from 'react-toastify';
+import jwt_decode from "jwt-decode";
 
-function Login(props) {
+
+function Login() {
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -38,8 +39,16 @@ function Login(props) {
             // handle login
             authApi.login({ email: formData.email, password: formData.password })
                 .then((response) => {
-                    localStorage.setItem('token', response.data);
-                    window.location = '/';
+                    var decoded = jwt_decode(response.data);
+                    if (decoded.role === "ROLE_ADMIN") {
+                        localStorage.setItem('token', response.data);
+                        window.location = "/";
+                    }
+                    else {
+                        toast.error("Không phải tài khoản admin", {
+                            position: toast.POSITION.BOTTOM_RIGHT
+                        })
+                    }
 
                 })
                 .catch(err => {
@@ -62,12 +71,12 @@ function Login(props) {
                         </div>
                         <form className="login100-form validate-form">
                             <div className="wrap-input100 validate-input m-b-26" data-validate="Username is required">
-                                <input className="input100" type="text" name="email" placeholder="Enter username" value={formData.email} onChange={handleChange} />
+                                <input className="input100" type="text" name="email" placeholder="Enter username" value={formData.email} onChange={handleChange} autocomplete="nope" />
                                 <span className="focus-input100" />
                             </div>
                             {errors.email && <span className="message-error">{errors.email}</span>}
                             <div className="wrap-input100 validate-input m-b-18 input-password" data-validate="Password is required">
-                                <input className="input100" type={showPassword ? 'text' : 'password'} name="password" placeholder="Enter password" value={formData.password} onChange={handleChange} />
+                                <input className="input100" type={showPassword ? 'text' : 'password'} name="password" placeholder="Enter password" value={formData.password} onChange={handleChange} autocomplete="nope" />
                                 {formData.password && <i className={"fa-regular eye-icon " + (showPassword ? 'fa-eye' : 'fa-eye-slash')} onClick={e => setShowPassword(!showPassword)}></i>}
                                 <span className="focus-input100" />
                             </div>

@@ -15,15 +15,14 @@ import userApi from "../../api/userApi";
 import { toast } from "react-toastify";
 import uploadImageApi from "../../api/uploadImageApi";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 const { Option } = Select;
 
 function disabledDate(current) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const selectedDate = current.startOf('day');
-
-
-    if (selectedDate.isAfter(today) || today.getFullYear() - selectedDate.toDate().getFullYear() > 150) {
+    if (selectedDate.isAfter(today) || today.getFullYear() - selectedDate.toDate().getFullYear() > 100) {
         return true;
     }
     return false;
@@ -36,6 +35,7 @@ function FormCreatePatient(props) {
     const [form] = Form.useForm();
     const [image, setImage] = useState();
     const [isLoading, setIsLoading] = useState(false);
+    const history = useHistory();
 
 
     const resetForm = () => {
@@ -49,17 +49,20 @@ function FormCreatePatient(props) {
     useEffect(() => {
         setDistrictSelected(null);
         form.setFieldsValue({ "district": null })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [citySelected])
 
     useEffect(() => {
         setWardSelected(null);
         form.setFieldsValue({ "ward": null })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [districtSelected])
 
     useEffect(() => {
         if (!props.isModalOpen) {
             resetForm();
         }
+        // eslint-disable-next-line
     }, [props.isModalOpen])
 
 
@@ -76,7 +79,7 @@ function FormCreatePatient(props) {
                 position: toast.POSITION.BOTTOM_RIGHT
             })
             props.setIsModalOpen(false);
-            window.location.reload()
+            history.go(0)
         } catch (err) {
             setIsLoading(false);
             toast.error(err.message, {
@@ -242,7 +245,7 @@ function FormCreatePatient(props) {
                                     ))}
                                 </Select>
                             </Form.Item>)}
-                            {wardSelected && <Form.Item name="address" label="Address" rules={[{ required: true }]}>
+                            {wardSelected && <Form.Item name="address" label="Street" rules={[{ required: true }]}>
                                 <Input />
                             </Form.Item>}
                             <Form.Item name="image" label="Avatar">

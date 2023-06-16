@@ -8,6 +8,7 @@ import {
     Typography,
     Popconfirm,
     Space,
+    Switch,
 } from "antd";
 
 import { DeleteOutlined, EditTwoTone, UserAddOutlined } from "@ant-design/icons";
@@ -16,6 +17,7 @@ import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import userApi from "../../api/userApi";
 import { toast } from "react-toastify";
 import FormCreatePatient from "../../components/patient/FormCreatePatient";
+import TextboxSearch from "../../components/TextboxSearch/TextboxSearch";
 
 const { Title } = Typography;
 
@@ -64,7 +66,19 @@ const columns = [
     },
 ];
 
-//Show list user in database 
+const handleOpenCloseUser = async (userId) => {
+    try {
+        var res = await userApi.openCloseUser(userId);
+        toast.success(res.message, {
+            position: toast.POSITION.BOTTOM_RIGHT
+        })
+    } catch (error) {
+        toast.error(error.message, {
+            position: toast.POSITION.BOTTOM_RIGHT
+        })
+    }
+}
+
 function PatientTable() {
     const history = useHistory()
     const [key, setKey] = useState('')
@@ -72,21 +86,25 @@ function PatientTable() {
     const [users, setUser] = useState()
     const [totalItem, setTotalItem] = useState(0);
     const [pageSize, setPageSize] = useState(5);
-    const [page, setPage] = useState(1);
+    const [page, setPage] = useState(1);    
+
 
     useEffect(() => {
         setPage(1);
-    }, [pageSize])
+    }, [pageSize, key])
 
     useEffect(() => {
-        fecthData();
-    }, [page, pageSize])
+        fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [page, pageSize, key])
 
     //Get data when page load 
-    const fecthData = async () => {
+    const fetchData = async () => {
         try {
             setLoading(true)
-            var res = await userApi.getAllPatient({page: page -1, pageSize: pageSize});
+            const param = { page: page - 1, pageSize: pageSize };
+            if (key) param.name = key;
+            var res = await userApi.getAllPatient(param);
             const data = []
             //Convert records to rows for display 
             res.data?.listItem.map((item, index) => (
@@ -119,16 +137,7 @@ function PatientTable() {
 
                     status: (
                         <>
-                            {
-                                item?.isDelete ?
-                                    <Button type="danger" className="tag-primary">
-                                        DENINE
-                                    </Button>
-                                    :
-                                    <Button type="primary" className="tag-primary">
-                                        ACTIVE
-                                    </Button>
-                            }
+                            <Switch defaultChecked={!item?.isDelete} onChange={() => { handleOpenCloseUser(item?.id) }} />
                         </>
                     ),
                     phone: (
@@ -148,7 +157,7 @@ function PatientTable() {
                     violation: (
                         <>
                             <div className="ant-employed">
-                                <span style={{marginLeft: 25}}>{item?.countViolation}</span>
+                                <span style={{ marginLeft: 25 }}>{item?.countViolation}</span>
                             </div>
                         </>
                     ),
@@ -194,8 +203,8 @@ function PatientTable() {
             var res = await userApi.deleteUser(id);
             toast.success(res.message, {
                 position: toast.POSITION.BOTTOM_RIGHT
-              })
-            fecthData();
+            })
+            fetchData();
         } catch (err) {
             toast.error(err.message, {
                 position: toast.POSITION.BOTTOM_RIGHT
@@ -213,8 +222,8 @@ function PatientTable() {
 
 
     //Request API to search user by name 
-    const handleSearch = () => {
-        fecthData(page, 10, key)
+    const handleSearch = (value) => {
+        setKey(value)
     }
 
     return (
@@ -229,16 +238,7 @@ function PatientTable() {
                             extra={
                                 <>
                                     <Space direction="horizontal">
-                                        <div className="search-container">
-                                            <div className="search-input-container">
-                                                <input type="text" className="search-input" placeholder="Search" onChange={(e) => setKey(e.target.value)} />
-                                            </div>
-                                            <div className="search-button-container">
-                                                <button className="search-button" onClick={handleSearch}>
-                                                    <i className="fas fa-search" />
-                                                </button>
-                                            </div>
-                                        </div>
+                                        <TextboxSearch handleSearch={handleSearch}/>
                                         <Button type="primary" onClick={showModal}>
                                             <UserAddOutlined style={{ fontSize: 18 }} />
                                             Add
@@ -270,7 +270,7 @@ function PatientTable() {
                         </Card>
                     </Col>
                 </Row>
-                <FormCreatePatient isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}/>                        
+                <FormCreatePatient isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
             </div>
         </>
     );

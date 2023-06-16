@@ -1,7 +1,6 @@
 import React from 'react';
 import { DeleteOutlined, EditTwoTone } from "@ant-design/icons";
-import { Avatar, Card } from 'antd';
-const { Meta } = Card;
+import { Card } from 'antd';
 
 function CardSpecialty(props) {
     return (
@@ -13,7 +12,7 @@ function CardSpecialty(props) {
                 cover={
                     <img
                         alt="example"
-                        style={{height: 200, width: 200, margin: 'auto', marginTop: 10}}
+                        style={{height: 100, width: 100, margin: 'auto', marginTop: 10}}
                         src={props.item.imageUrl}
                     />
                 }

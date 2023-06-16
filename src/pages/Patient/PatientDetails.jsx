@@ -19,7 +19,7 @@ import moment from "moment";
 import listAdress from "../../assets/address.json";
 import userApi from "../../api/userApi.js";
 import { toast } from "react-toastify";
-import ImageUpload from "../../components/ImageUpload.js";
+import ImageUpload from "../../components/ImageUpload";
 import uploadImageApi from "../../api/uploadImageApi";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 const { Title } = Typography;
@@ -31,7 +31,7 @@ function disabledDate(current) {
     const selectedDate = current.startOf('day');
 
 
-    if (selectedDate.isAfter(today) || today.getFullYear() - selectedDate.toDate().getFullYear() > 150) {
+    if (selectedDate.isAfter(today) || today.getFullYear() - selectedDate.toDate().getFullYear() > 100) {
         return true;
     }
     return false;
@@ -63,7 +63,8 @@ function PatientDetails() {
 
     useEffect(() => {
         setIsGetDataForEdit(true);
-        fecthData(params.id);
+        fetchData(params.id);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
@@ -71,6 +72,7 @@ function PatientDetails() {
             setDistrictSelected(null);
             form.setFieldsValue({ "district": null })
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [citySelected])
 
     useEffect(() => {
@@ -80,11 +82,12 @@ function PatientDetails() {
             setWardSelected(null);
             form.setFieldsValue({ "ward": null })
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [districtSelected])
 
 
     //Get data when form load 
-    const fecthData = async (id) => {
+    const fetchData = async (id) => {
         try {
             setIsLoading(true);
             var res = await userApi.getDetailUser(id);
@@ -123,7 +126,7 @@ function PatientDetails() {
             toast.success(res.message, {
                 position: toast.POSITION.BOTTOM_RIGHT
             })
-            fecthData(params.id);
+            fetchData(params.id);
         } catch (error) {
             toast.error(error.message, {
                 position: toast.POSITION.BOTTOM_RIGHT
@@ -281,7 +284,7 @@ function PatientDetails() {
                                                 </Form.Item>)}
                                             </Col>
                                             <Col span={12}>
-                                                {wardSelected && <Form.Item name="address" label="Address" rules={[{ required: true }]}>
+                                                {wardSelected && <Form.Item name="address" label="Street" rules={[{ required: true }]}>
                                                     <Input />
                                                 </Form.Item>}
                                             </Col>

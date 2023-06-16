@@ -8,6 +8,7 @@ import {
     Typography,
     Popconfirm,
     Space,
+    Switch,
 } from "antd";
 
 import { DeleteOutlined, EditTwoTone, UserAddOutlined } from "@ant-design/icons";
@@ -15,6 +16,8 @@ import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import { toast } from "react-toastify";
 import doctorApi from "../../api/doctorApi";
+import userApi from "../../api/userApi";
+import TextboxSearch from "../../components/TextboxSearch/TextboxSearch";
 
 const { Title } = Typography;
 
@@ -63,6 +66,19 @@ const columns = [
     },
 ];
 
+const handleOpenCloseUser = async (userId) => {
+    try {
+        var res = await userApi.openCloseUser(userId);
+        toast.success(res.message, {
+            position: toast.POSITION.BOTTOM_RIGHT
+        })
+    } catch (error) {
+        toast.error(error.message, {
+            position: toast.POSITION.BOTTOM_RIGHT
+        })
+    }
+}
+
 //Show list user in database 
 function DoctorTable() {
     const history = useHistory()
@@ -75,17 +91,20 @@ function DoctorTable() {
 
     useEffect(() => {
         setPage(1);
-    }, [pageSize])
+    }, [pageSize, key])
 
     useEffect(() => {
-        fecthData();
-    }, [page, pageSize])
+        fetchData();
+        // eslint-disable-next-line
+    }, [page, pageSize, key])
 
     //Get data when page load 
-    const fecthData = async () => {
+    const fetchData = async () => {
         try {
             setLoading(true)
-            var res = await doctorApi.getAllDoctor({page: page -1, pageSize: pageSize});
+            const param = { page: page - 1, pageSize: pageSize };
+            if (key) param.keyword = key;
+            var res = await doctorApi.getAllDoctor(param);
             console.log(res.data);
             const data = []
             //Convert records to rows for display 
@@ -119,16 +138,7 @@ function DoctorTable() {
 
                     status: (
                         <>
-                            {
-                                item?.user.isDelete ?
-                                    <Button type="danger" className="tag-primary">
-                                        DENINE
-                                    </Button>
-                                    :
-                                    <Button type="primary" className="tag-primary">
-                                        ACTIVE
-                                    </Button>
-                            }
+                            <Switch defaultChecked={!item?.user?.isDelete} onChange={() => { handleOpenCloseUser(item?.user?.id) }} />
                         </>
                     ),
                     specialty: (
@@ -142,14 +152,13 @@ function DoctorTable() {
                         <>
                             <div className="ant-employed">
                                 <span>{item?.user.city}</span>
-                                {/* <div dangerouslySetInnerHTML={{ __html: item.description }}></div> */}
                             </div>
                         </>
                     ),
                     violation: (
                         <>
                             <div className="ant-employed">
-                                <span style={{marginLeft: 25}}>{item?.user.countViolation}</span>
+                                <span style={{ marginLeft: 25 }}>{item?.user.countViolation}</span>
                             </div>
                         </>
                     ),
@@ -195,8 +204,8 @@ function DoctorTable() {
             var res = await doctorApi.deleteDoctor(id);
             toast.success(res.message, {
                 position: toast.POSITION.BOTTOM_RIGHT
-              })
-            fecthData();
+            })
+            fetchData();
         } catch (err) {
             toast.error(err.message, {
                 position: toast.POSITION.BOTTOM_RIGHT
@@ -205,17 +214,10 @@ function DoctorTable() {
 
     }
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-    //Show form create new user 
-    const showModal = () => {
-        setIsModalOpen(true);
-    };
-
 
     //Request API to search user by name 
-    const handleSearch = () => {
-        fecthData(page, 10, key)
+    const handleSearch = (value) => {
+        setKey(value);
     }
 
     return (
@@ -230,17 +232,8 @@ function DoctorTable() {
                             extra={
                                 <>
                                     <Space direction="horizontal">
-                                        <div className="search-container">
-                                            <div className="search-input-container">
-                                                <input type="text" className="search-input" placeholder="Search" onChange={(e) => setKey(e.target.value)} />
-                                            </div>
-                                            <div className="search-button-container">
-                                                <button className="search-button" onClick={handleSearch}>
-                                                    <i className="fas fa-search" />
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <Button type="primary" onClick={() => window.location = '/doctor/add'}>
+                                        <TextboxSearch handleSearch={handleSearch} />
+                                        <Button type="primary" onClick={() => history.push('/doctor/add')}>
                                             <UserAddOutlined style={{ fontSize: 18 }} />
                                             Add
                                         </Button>

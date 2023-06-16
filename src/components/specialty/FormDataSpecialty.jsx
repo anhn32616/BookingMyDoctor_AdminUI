@@ -25,6 +25,7 @@ function FormDataSpecialty(props) {
         } else {
             form.resetFields();
         }
+        // eslint-disable-next-line
     }, [props.item]);
 
     useEffect(() => {
@@ -32,6 +33,7 @@ function FormDataSpecialty(props) {
             setImage(null);
             form.resetFields();
         }
+        // eslint-disable-next-line
     }, [props.isShowForm])
 
 

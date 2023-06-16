@@ -1,0 +1,27 @@
+.event-pending {
+    background-color: #0000ffb8;
+}
+
+.event-available {
+    background-color: #1b7c1b;
+}
+
+.event-booked {
+    background-color: #de0c0c;
+}
+
+.event-default {
+    background-color: gray;
+}
+
+.fc-event {
+    color: white !important;
+}
+
+.fc-daygrid-event-dot {
+    border: none;
+}
+
+.fc-daygrid-dot-event.fc-event-mirror, .fc-daygrid-dot-event:hover {
+    background-color: rgb(122 15 15 / 82%);
+}

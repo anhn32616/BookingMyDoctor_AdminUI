@@ -5,7 +5,8 @@ class Http {
             // baseURL: 'https://bookmydoctor.onrender.com/api/',
             baseURL: 'https://localhost:7042/api/',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer ' + localStorage.getItem('token')
             }
         })
         this.instance.interceptors.response.use(

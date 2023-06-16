@@ -1,0 +1,25 @@
+.patient-info {
+    display: flex;
+    align-items: center;
+    height: 230px;
+    min-height: 230px;
+}
+
+.patient-image {
+    margin-right: 20px;
+}
+
+.patient-image img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.patient-details h2 {
+    margin-bottom: 10px;
+}
+
+.patient-details p {
+    margin-bottom: 5px;
+}

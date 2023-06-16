@@ -18,6 +18,9 @@ const userApi = {
     },
     deleteUser(id, config) {
         return http.delete(`/user/${id}`, { id: id }, config)
+    },
+    openCloseUser(id, config) {
+        return http.put(`/user/open-close/${id}`, { id: id }, config)
     }
 }
 export default userApi

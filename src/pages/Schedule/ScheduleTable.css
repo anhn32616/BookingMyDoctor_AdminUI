@@ -1,0 +1,16 @@
+.filter-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 16px;
+}
+
+.filter-item-label {
+    font-size: 13px;
+    font-weight: 800;
+    color: #6a6a6a;
+}
+
+.filter-item .hidden {
+    opacity: 0;
+}

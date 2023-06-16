@@ -11,15 +11,15 @@ import {
     Select,
     Typography,
     InputNumber,
-    DatePicker
+    DatePicker,
+    Rate
 } from "antd";
 
 import { useHistory, useParams } from "react-router-dom/cjs/react-router-dom.min";
 import moment from "moment";
 import listAdress from "../../assets/address.json";
-import userApi from "../../api/userApi.js";
 import { toast } from "react-toastify";
-import ImageUpload from "../../components/ImageUpload.js";
+import ImageUpload from "../../components/ImageUpload";
 import uploadImageApi from "../../api/uploadImageApi";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import hospitalApi from "../../api/hospitalApi";
@@ -36,14 +36,14 @@ function disabledDate(current) {
     const selectedDate = current.startOf('day');
 
 
-    if (selectedDate.isAfter(today) || today.getFullYear() - selectedDate.toDate().getFullYear() > 150) {
+    if (selectedDate.isAfter(today) || today.getFullYear() - selectedDate.toDate().getFullYear() > 100) {
         return true;
     }
     return false;
 }
 
 
-function DoctorCreate() {
+function DoctorEdit() {
     const history = useHistory();
     const [form] = Form.useForm();
     const params = useParams();
@@ -56,22 +56,67 @@ function DoctorCreate() {
     const [listClinic, setListClinic] = useState([]);
     const [listSpecialty, setListSpecialty] = useState([]);
     const [content, setContent] = useState("");
+    const [doctorInfo, setDoctorInfo] = useState();
+    const [isGetDataForEdit, setIsGetDataForEdit] = useState(true);
 
 
-    useEffect(async () => {
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                var resHospital = await hospitalApi.getAllHospital();
+                setListHospital(resHospital.data.listItem);
+                var resClinic = await clinicApi.getAllClinic();
+                setListClinic(resClinic.data.listItem);
+                var resSpecialty = await specialtyApi.getAllSpecialty();
+                setListSpecialty(resSpecialty.data.listItem);
+            } catch (err) {
+                toast.error(err.message, {
+                    position: toast.POSITION.BOTTOM_RIGHT
+                })
+            }
+        }
+        fetchData()
+    }, [])
+
+    const fetchData = async () => {
         try {
-            var resHospital = await hospitalApi.getAllHospital();
-            setListHospital(resHospital.data.listItem);
-            var resClinic = await clinicApi.getAllClinic();
-            setListClinic(resClinic.data.listItem);
-            var resSpecialty = await specialtyApi.getAllSpecialty();
-            setListSpecialty(resSpecialty.data.listItem);
+            setIsGetDataForEdit(true);
+            var res = await doctorApi.getDetailDoctor(params.id);
+            setDoctorInfo(res?.data);
+            const city = listAdress.find(city => city.name === res?.data?.user?.city);
+            const district = city?.districts.find(d => d.name === res?.data?.user?.district);
+            setCitySelected(city);
+            setDistrictSelected(district);
+            setWardSelected(res?.data?.user?.ward);
+            const formData = {
+                ...res?.data?.user,
+                id: res?.data?.id,
+                monthPaid: res?.data?.monthPaid,
+                numberOfReviews: res?.data?.numberOfReviews,
+                rate: res?.data?.rate,
+                hospitalId: res?.data?.hospitalId,
+                specialtyId: res?.data?.specialtyId,
+                clinicId: res?.data?.clinicId,
+                birthDay: moment(new Date(res?.data?.user?.birthDay.slice(0, 10)), "YYYY-MM-DD")
+            }
+            console.log(formData);
+            setDoctorInfo(formData);
+            setContent(res.data.description);
+            form.setFieldsValue(formData);
         } catch (err) {
             toast.error(err.message, {
                 position: toast.POSITION.BOTTOM_RIGHT
             })
         }
-    }, [])
+    }
+
+    useEffect(() => {
+        fetchData();
+        // eslint-disable-next-line
+    }, [params.id])
+
+
 
 
     const uploadImage = async () => {
@@ -84,13 +129,21 @@ function DoctorCreate() {
     };
 
     useEffect(() => {
-        setDistrictSelected(null);
-        form.setFieldsValue({ "district": null })
+        if (!isGetDataForEdit) {
+            setDistrictSelected(null);
+            form.setFieldsValue({ "district": null })
+        }
+        // eslint-disable-next-line
     }, [citySelected])
 
     useEffect(() => {
-        setWardSelected(null);
-        form.setFieldsValue({ "ward": null })
+        if (isGetDataForEdit) {
+            setIsGetDataForEdit(false);
+        } else {
+            setWardSelected(null);
+            form.setFieldsValue({ "ward": null })
+        }
+        // eslint-disable-next-line
     }, [districtSelected])
 
     //Request API to update user 
@@ -104,30 +157,30 @@ function DoctorCreate() {
             console.log(formData);
             let dataDoctor = {
                 user: {
-                    "email": formData.email,
                     "fullName": formData.fullName,
                     "image": formData.image,
-                    "roleName": "ROLE_DOCTOR",
                     "phoneNumber": formData.phoneNumber,
                     "birthDay": formData.birthDay,
                     "city": formData.city,
                     "district": formData.district,
                     "ward": formData.ward,
                     "address": formData.address,
+                    "countViolation": formData.countViolation,
                     "gender": formData.gender,
                 },
                 "description": content,
                 "hospitalId": formData.hospitalId,
                 "clinicId": formData.clinicId,
-                "specialtyId": formData.specialtyId
+                "specialtyId": formData.specialtyId,
+                "id": doctorInfo.id
             };
-            console.log('tesst', dataDoctor);
-            var res = await doctorApi.addDoctor(dataDoctor)
+            console.log('test', dataDoctor);
+            var res = await doctorApi.updateDoctor(dataDoctor)
             setIsLoading(false);
             toast.success(res.message, {
                 position: toast.POSITION.BOTTOM_RIGHT
             })
-            window.location = '/doctor';
+            fetchData();
         } catch (error) {
             setIsLoading(false);
             toast.error(error.message, {
@@ -146,7 +199,7 @@ function DoctorCreate() {
                     <Col span={24} xs="24" xl={24}>
                         <Card
                             bordered={false}
-                            title={<h6 className="font-semibold m-0" style={{ fontSize: 20, fontWeight: 600 }}>Add Doctor</h6>}
+                            title={<h6 className="font-semibold m-0" style={{ fontSize: 20, fontWeight: 600 }}>Edit Doctor</h6>}
                             className="header-solid h-full card-profile-information"
                             bodyStyle={{ paddingTop: 0, paddingBottom: 16 }}
                         >
@@ -207,17 +260,15 @@ function DoctorCreate() {
                                                     />
                                                 </Form.Item></Col>
                                             <Col span={12}>
-                                                <Form.Item name="email" label="Email"
+                                                <Form.Item label="Violation" name="countViolation"
                                                     rules={[{ required: true },
                                                     {
-                                                        type: 'email',
-                                                    },
-                                                    {
-                                                        pattern: /^[a-zA-Z0-9.]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
-                                                        message: 'Email format wrong',
+                                                        type: 'number',
+                                                        min: 0,
+                                                        max: 10
                                                     }]}
                                                 >
-                                                    <Input />
+                                                    <InputNumber className="ant-input" style={{ display: 'flex', alignItems: 'center', width: '100%' }} />
                                                 </Form.Item>
                                             </Col>
                                         </Row>
@@ -371,7 +422,7 @@ function DoctorCreate() {
                                                 </Form.Item>)}
                                             </Col>
                                             <Col span={12}>
-                                                {wardSelected && <Form.Item name="address" label="Address" rules={[{ required: true }]}>
+                                                {wardSelected && <Form.Item name="address" label="Street" rules={[{ required: true }]}>
                                                     <Input />
                                                 </Form.Item>}
                                             </Col>
@@ -389,14 +440,17 @@ function DoctorCreate() {
                                                     style={{ border: '1px solid #00000045' }}
                                                     bordered={false}
                                                     className="header-solid h-full"
-                                                    title="Avatar"
                                                 >
                                                     <Row gutter={[24, 24]} style={{ textAlign: "center" }}>
                                                         <Col span={24} md={24}>
                                                             <Form.Item name='image'>
-                                                                <ImageUpload image={image} setImage={setImage}></ImageUpload>
+                                                                <ImageUpload image={image} setImage={setImage} currentImage={doctorInfo?.image}></ImageUpload>
                                                             </Form.Item>
+                                                            <Rate disabled allowHalf defaultValue={4.5} />
                                                             <div className="avatar-info" style={{ marginTop: 10 }}>
+                                                                <Title level={3} style={{ marginBottom: "0" }}>{doctorInfo?.fullName}</Title>
+                                                                <p>{doctorInfo?.email}</p>
+                                                                <p>{doctorInfo?.address}, {doctorInfo?.ward}, {doctorInfo?.district}, {doctorInfo?.city}</p>
                                                             </div>
                                                         </Col>
                                                     </Row>
@@ -430,4 +484,4 @@ function DoctorCreate() {
     );
 }
 
-export default DoctorCreate;
+export default DoctorEdit;

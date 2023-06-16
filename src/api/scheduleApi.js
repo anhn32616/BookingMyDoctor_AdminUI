@@ -1,21 +1,21 @@
 import http from '../utils/http'
 
-const hospitalApi = {
-    getAllHospital(params) {
-        return http.get('/hospital', { params: params })
+const scheduleApi = {
+    getAllSchedule(params) {
+        return http.get('/schedule', { params: params })
     },
-    addHospital(data, config) {
-        return http.post('/hospital', data, config)
+    addSchedule(data, config) {
+        return http.post('/schedule', data, config)
     },
-    updateHospital(data, config) {
+    updateSchedule(data, config) {
         console.log(data.id);
-        return http.put(`/hospital/${data.id}`, data, config)
+        return http.put(`/schedule/${data.id}`, data, config)
     },
-    getDetailHospital(id) {
-        return http.get(`/hospital/${id}`)
+    getDetailSchedule(id) {
+        return http.get(`/schedule/${id}`)
     },
-    deleteHospital(id, config) {
-        return http.delete(`/hospital/${id}`, { id: id }, config)
+    deleteSchedule(id, config) {
+        return http.delete(`/schedule/${id}`, { id: id }, config)
     }
 }
-export default hospitalApi
+export default scheduleApi

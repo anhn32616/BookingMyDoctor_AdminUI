@@ -1,14 +1,4 @@
-/*!
-=========================================================
-* Muse Ant Design Dashboard - v1.0.0
-=========================================================
-* Product Page: https://www.creative-tim.com/product/muse-ant-design-dashboard
-* Copyright 2021 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/muse-ant-design-dashboard/blob/main/LICENSE.md)
-* Coded by Creative Tim
-=========================================================
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
+
 import {
   Row,
   Col,
@@ -16,6 +6,7 @@ import {
   Table,
   Button,
   Modal,
+  Space,
 } from "antd";
 
 import { DeleteOutlined, EditTwoTone } from "@ant-design/icons";
@@ -26,21 +17,8 @@ import { useEffect, useState } from "react";
 import hospitalApi from "../../api/hospitalApi";
 import FormDataHospital from "../../components/hospital/FormDataHospital";
 import { toast } from 'react-toastify'
+import TextboxSearch from "../../components/TextboxSearch/TextboxSearch";
 
-
-
-
-
-
-//styles
-const HeaderTableStyles = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  padding: "16px 24px",
-  borderBottom: "1px solid #f0f0f0",
-  borderRadius: "2px 2px 0 0",
-}
 
 // table code start
 const columns = [
@@ -70,6 +48,7 @@ const columns = [
     key: "CITY",
     dataIndex: "city",
     title: "CITY",
+    width: 100
   },
   {
     key: "actions",
@@ -80,7 +59,7 @@ const columns = [
 
 
 
-function SchedulesTable() {
+function HospitalsTable() {
   const [dataSource, setDataSource] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalItem, setTotalItem] = useState(0);
@@ -90,16 +69,23 @@ function SchedulesTable() {
   const [isShowForm, setIsShowForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
+  const [key, setKey] = useState('')
+
 
 
 
   useEffect(() => {
     setPage(1);
-  }, [pageSize])
+  }, [pageSize, key])
 
   useEffect(() => {
     getRecords();
-  }, [page, pageSize])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, pageSize, key])
+
+  const handleSearch = (value) => {
+    setKey(value);
+  }
 
 
 
@@ -128,19 +114,17 @@ function SchedulesTable() {
   const getRecords = async () => {
     try {
       setLoading(true);
-      let resApi = await hospitalApi.getAllHospital({
-        page: page - 1,
-        pageSize: pageSize
-      }
-      );
+      const param = { page: page - 1, pageSize: pageSize };
+      if (key) param.keyword = key;
+      let resApi = await hospitalApi.getAllHospital(param);
       const data = [];
-      if (resApi.data != null) {
-        resApi.data.listItem.map((item, index) => {
+      if (resApi.data !== null) {
+        resApi.data.listItem.forEach((item, index) => {
           console.log(item);
           data.push({
             key: index,
             imageUrl: (
-              <img src={item.imageUrl} alt="image specialty" style={{width: 200, height: 100, objectFit: 'cover'}}/>
+              <img src={item.imageUrl} alt="specialty" style={{ width: 200, height: 100, objectFit: 'cover' }} />
             ),
             id: (
               <>{item.id}</>
@@ -186,19 +170,25 @@ function SchedulesTable() {
             <Card
               bordered={false}
               className="criclebox tablespace mb-24"
+              title="List Hospital"
+              extra={
+                <>
+                  <Space direction="horizontal">
+                    <TextboxSearch handleSearch={handleSearch} />
+                    <Button
+                      onClick={() => {
+                        setItem(null)
+                        setIsAdding(true);
+                        setIsShowForm(true);
+                      }}
+                      style={{ background: "#1890ff", color: "#ffffff" }}>
+                      <i className="fa-solid fa-plus" style={{ marginRight: 6 }}></i>
+                      Add
+                    </Button>
+                  </Space>
+                </>
+              }
             >
-              <div style={HeaderTableStyles}>
-                <span style={{ fontSize: 20, fontWeight: 600 }}>List schedule</span>
-                <Button
-                  onClick={() => {
-                    setItem(null)
-                    setIsAdding(true);
-                    setIsShowForm(true);
-                  }}
-                  style={{ background: "#1890ff", color: "#ffffff" }}>
-                  <i className="fa-solid fa-plus" style={{ marginRight: 6 }}></i>
-                  Add</Button>
-              </div>
               <div className="table-responsive">
                 <Table
                   columns={columns}
@@ -221,7 +211,7 @@ function SchedulesTable() {
                 {/* form edit add */}
                 <FormDataHospital getRecords={getRecords} item={item}
                   setIsShowForm={setIsShowForm} setIsAdding={setIsAdding} setIsEditing={setIsEditing}
-                  isAdding={isAdding} isEditing={isEditing} isShowForm={isShowForm}/>
+                  isAdding={isAdding} isEditing={isEditing} isShowForm={isShowForm} />
               </div>
             </Card>
           </Col>
@@ -231,4 +221,4 @@ function SchedulesTable() {
   );
 }
 
-export default SchedulesTable;
+export default HospitalsTable;

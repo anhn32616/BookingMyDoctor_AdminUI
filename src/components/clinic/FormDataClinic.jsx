@@ -6,11 +6,12 @@ import {
     Modal
 } from "antd";
 import ImageUpload from "../ImageUpload";
-import hospitalApi from "../../api/hospitalApi";
+import clinicApi from "../../api/clinicApi";
 import listAdress from "../../assets/address.json";
 import uploadImageApi from "../../api/uploadImageApi";
 import { toast } from "react-toastify";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
+
 
 
 const { Option } = Select;
@@ -18,7 +19,7 @@ const { Option } = Select;
 
 
 
-function FormDataHospital(props) {
+function FormDataClinic(props) {
     const [citySelected, setCitySelected] = useState();
     const [districtSelected, setDistrictSelected] = useState();
     const [wardSelected, setWardSelected] = useState();
@@ -26,6 +27,7 @@ function FormDataHospital(props) {
     const [image, setImage] = useState();
     const [isGetDataForEdit, setIsGetDataForEdit] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
+
 
 
     const resetForm = () => {
@@ -47,16 +49,15 @@ function FormDataHospital(props) {
         } else {
             resetForm();
         }
+        // eslint-disable-next-line
     }, [props.item]);
 
     useEffect(() => {
         if (!props.isShowForm) {
             setImage(null);
-            setCitySelected(null);
-            setDistrictSelected(null);
-            setWardSelected(null);
-            form.resetFields();
+            resetForm();
         }
+        // eslint-disable-next-line
     }, [props.isShowForm])
 
     useEffect(() => {
@@ -64,6 +65,7 @@ function FormDataHospital(props) {
             setDistrictSelected(null);
             form.setFieldsValue({ "district": null })
         }
+        // eslint-disable-next-line
     }, [citySelected])
 
     useEffect(() => {
@@ -73,19 +75,19 @@ function FormDataHospital(props) {
             setWardSelected(null);
             form.setFieldsValue({ "ward": null })
         }
+        // eslint-disable-next-line
     }, [districtSelected])
 
     const onAdd = async () => {
         const formData = form.getFieldsValue();
-        hospitalApi.addHospital(formData).then((response) => {
+        clinicApi.addClinic(formData).then((response) => {
+            setIsLoading(false);
             toast.success(response.message, {
                 position: toast.POSITION.BOTTOM_RIGHT
             });
-            setIsLoading(false);
-            resetForm();
+            props.getRecords();
             props.setIsShowForm(false)
             props.setIsAdding(false);
-            props.getRecords();
         }).catch((error) => {
             setIsLoading(false);
             toast.error(error.message, {
@@ -94,22 +96,24 @@ function FormDataHospital(props) {
         });
 
     };
-    const onEdit = async () => {
+    const onEdit = () => {
         const formData = form.getFieldsValue();
         formData.id = props.item.id;
-        await hospitalApi.updateHospital(formData).then((response) => {
+        clinicApi.updateClinic(formData).then((response) => {
+            setIsLoading(false);
             toast.success(response.message, {
                 position: toast.POSITION.BOTTOM_RIGHT
-            });
+            })
+            props.setIsShowForm(false)
+            props.setIsEditing(false);
             props.getRecords();
+
         }).catch((error) => {
+            setIsLoading(false);
             toast.error(error.message, {
                 position: toast.POSITION.BOTTOM_RIGHT
             })
         });
-        setIsLoading(false);
-        props.setIsShowForm(false)
-        props.setIsEditing(false);
     };
 
     const uploadImage = async () => {
@@ -126,7 +130,7 @@ function FormDataHospital(props) {
             {isLoading && <LoadingSpinner />}
             <Modal forceRender
 
-                title={props.isAdding ? "Add Hospital" : "Edit Hospital"}
+                title={props.isAdding ? "Add Clinic" : "Edit Clinic"}
                 visible={props.isShowForm}
                 okText="Submit"
                 onCancel={() => {
@@ -211,7 +215,7 @@ function FormDataHospital(props) {
                             ))}
                         </Select>
                     </Form.Item>)}
-                    {wardSelected && <Form.Item name="address" label="Address" rules={[{ required: true }]}>
+                    {wardSelected && <Form.Item name="address" label="Street" rules={[{ required: true }]}>
                         <Input />
                     </Form.Item>}
 
@@ -225,4 +229,4 @@ function FormDataHospital(props) {
     );
 }
 
-export default FormDataHospital;
+export default FormDataClinic;
