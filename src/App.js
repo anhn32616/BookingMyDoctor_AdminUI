@@ -1,5 +1,5 @@
 import { Switch, Route, Redirect } from "react-router-dom";
-import Home from "./pages/Home/Home";
+// import Home from "./pages/Home/Home";
 import HospitalsTable from "./pages/Hospital/HospitalsTable";
 import Main from "./components/layout/Main";
 import "antd/dist/antd.css";
@@ -9,7 +9,7 @@ import './assets/styles/public.css'
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import Login from "./pages/Login/Login";
 import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css';
+import 'react-toastify/dist/ReactToastify.css'
 import ClinicsTable from "./pages/Clinic/ClinicsTable";
 import SpecialtyTable from "./pages/Speciatly/SpecialtyTable";
 import PatientTable from "./pages/Patient/PatientTable";
@@ -19,6 +19,7 @@ import DoctorCreate from "./pages/Doctor/DoctorCreate";
 import DoctorEdit from "./pages/Doctor/DoctorEdit";
 import SchedulesTable from "./pages/Schedule/ScheduleTable";
 import AppointmentsTable from "./pages/Appointment/AppointmentTable";
+import Revenue from "./pages/Revenue/Revenue"; 
 
 
 function App() {
@@ -29,13 +30,14 @@ function App() {
         <Route exact path="/login" component={Login} />
         <Switch>
           <Main>
-            <Route exact path="/" component={Home} />
-            <Route exact path="/dashboard" component={Home} />
+            {/* <Route exact path="/" component={Home} /> */}
+            {/* <Route exact path="/dashboard" component={Home} /> */}
             <Route exact path="/hospitals" component={HospitalsTable} />
             <Route exact path="/schedule" component={SchedulesTable} />
             <Route exact path="/clinics" component={ClinicsTable} />
             <Route exact path="/specialty" component={SpecialtyTable} />
             <Route exact path="/patient" component={PatientTable} />
+            <Route exact path="/revenue" component={Revenue} />
             <Route exact path="/appointment" component={AppointmentsTable} />
             <Route exact path="/patient/:id" component={PatientDetails} />
             <Route exact path="/doctor" component={DoctorTable} />

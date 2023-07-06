@@ -454,7 +454,6 @@ function DoctorEdit() {
                                                             </div>
                                                         </Col>
                                                     </Row>
-
                                                 </Card>
                                             </Col>
                                         </Row>

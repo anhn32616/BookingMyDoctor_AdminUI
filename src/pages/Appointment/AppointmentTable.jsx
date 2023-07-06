@@ -57,6 +57,11 @@ const columns = [
     title: "TIME",
   },
   {
+    key: "PRICE",
+    dataIndex: "price",
+    title: "PRICE",
+  },
+  {
     key: "status",
     dataIndex: "status",
     title: "STATUS",
@@ -217,6 +222,9 @@ function AppointmentsTable() {
             ),
             doctor: (
               <>{item.schedule?.doctorName}</>
+            ),
+            price: (
+              <>{item.schedule?.cost?.toLocaleString('vi-VN', { style: 'currency', currency: 'VND'}) }</>
             ),
             date: (
               <>{convertDateTime(item.date)}</>

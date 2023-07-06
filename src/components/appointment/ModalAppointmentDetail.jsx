@@ -1,7 +1,8 @@
 import { Modal, Rate, Tag } from 'antd';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './ModalAppointmentDetail.css'
 import PatientInfo from '../patient/PatientInfo';
+import rateApi from '../../api/rateApi';
 
 const colorStatus = (status) => {
     switch (status) {
@@ -31,6 +32,22 @@ function convertDateTime(dateTimeStr) {
 }
 
 function ModalAppointmentDetail({ appointment, setModalVisible, modalVisible }) {
+    const [rate, setRate] = useState();
+
+    useEffect(() => {
+        const getRateOfAppointment = async () => {
+            if (appointment?.status === "Done") {
+                try {
+                    var res = await rateApi.getRateByAppointmentId(appointment.id)
+                    if (res?.data) setRate(res.data.point); else setRate(null)
+                } catch (error) {
+                    console.log(error.message);
+                }
+            }
+        }
+        getRateOfAppointment();
+    }, [appointment])
+
     return (
         <Modal
             title="Appointment details"
@@ -44,6 +61,14 @@ function ModalAppointmentDetail({ appointment, setModalVisible, modalVisible }) 
             }}
         >
             <div className="appointment-info">
+                {
+                    rate && (
+                        <p>
+                            <span className='info-label'>Rate: </span>
+                            <Rate disabled value={rate} />
+                        </p>
+                    )
+                }
                 <p>
                     <span className="info-label">ID:</span> {appointment?.id}
                 </p>

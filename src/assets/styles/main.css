@@ -410,9 +410,11 @@ body {
 }
 .layout-dashboard .header-control {
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row;
   align-items: center;
+  justify-content: flex-end;
   margin-top: 10px;
+  gap: 10px;
 }
 
 .ant-dropdown-menu.ant-dropdown-menu-split.header-notifications-dropdown {
@@ -971,6 +973,7 @@ button.ant-btn.bell strong {
   border-radius: 0.5rem;
   margin-left: auto;
   line-height: 55px;
+  font-size: 26px;
 }
 
 .icon-box span {
