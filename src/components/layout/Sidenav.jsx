@@ -1,7 +1,9 @@
 import { Menu } from "antd";
 import { NavLink, useLocation } from "react-router-dom";
 import logo from "../../assets/images/logoApp.png"
-import { FaClinicMedical, FaHospital, FaUserAlt, FaUserNurse } from 'react-icons/fa'
+import { FaCcAmazonPay, FaClinicMedical, FaHospital, FaUserAlt, FaUserNurse } from 'react-icons/fa'
+import { RiMoneyDollarCircleFill } from 'react-icons/ri'
+
 
 
 function Sidenav({ color }) {
@@ -193,9 +195,22 @@ function Sidenav({ color }) {
                 background: page === "tables" ? color : "",
               }}
             >
-              {tables}
+              <RiMoneyDollarCircleFill style={{fontSize: 20}}/>
             </span>
             <span className="label">Revenue</span>
+          </NavLink>
+        </Menu.Item>
+        <Menu.Item key="10">
+          <NavLink to="/payment">
+            <span
+              className="icon"
+              style={{
+                background: page === "tables" ? color : "",
+              }}
+            >
+              <FaCcAmazonPay style={{fontSize: 20}}/>
+            </span>
+            <span className="label">Payment</span>
           </NavLink>
         </Menu.Item>
         

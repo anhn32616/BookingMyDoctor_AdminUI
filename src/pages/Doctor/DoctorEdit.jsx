@@ -57,8 +57,7 @@ function DoctorEdit() {
     const [listSpecialty, setListSpecialty] = useState([]);
     const [content, setContent] = useState("");
     const [doctorInfo, setDoctorInfo] = useState();
-    const [isGetDataForEdit, setIsGetDataForEdit] = useState(true);
-
+    let isGetDataForEdit = true;
 
 
     useEffect(() => {
@@ -81,7 +80,7 @@ function DoctorEdit() {
 
     const fetchData = async () => {
         try {
-            setIsGetDataForEdit(true);
+            isGetDataForEdit = true;
             var res = await doctorApi.getDetailDoctor(params.id);
             setDoctorInfo(res?.data);
             const city = listAdress.find(city => city.name === res?.data?.user?.city);
@@ -138,7 +137,7 @@ function DoctorEdit() {
 
     useEffect(() => {
         if (isGetDataForEdit) {
-            setIsGetDataForEdit(false);
+            isGetDataForEdit = false;
         } else {
             setWardSelected(null);
             form.setFieldsValue({ "ward": null })
@@ -180,7 +179,7 @@ function DoctorEdit() {
             toast.success(res.message, {
                 position: toast.POSITION.BOTTOM_RIGHT
             })
-            fetchData();
+            history.push('/doctor')
         } catch (error) {
             setIsLoading(false);
             toast.error(error.message, {
@@ -402,6 +401,7 @@ function DoctorEdit() {
                                         </Row>
                                         <Row gutter={[24, 0]}>
                                             <Col span={12}>
+                                                {console.log('ffffff',districtSelected)}
                                                 {districtSelected && (<Form.Item name="ward" label="Ward" rules={[{ required: true }]}>
                                                     <Select
                                                         showSearch
@@ -446,7 +446,14 @@ function DoctorEdit() {
                                                             <Form.Item name='image'>
                                                                 <ImageUpload image={image} setImage={setImage} currentImage={doctorInfo?.image}></ImageUpload>
                                                             </Form.Item>
-                                                            <Rate disabled allowHalf defaultValue={4.5} />
+                                                            <div className="doctorProfile__rate">
+                                                                <p className="doctorProfile__rate-point">
+                                                                    <Rate disabled value={doctorInfo?.rate}></Rate>
+                                                                </p>
+                                                                <p className="doctorProfile__rate-count">
+                                                                    {doctorInfo?.numberOfReviews ? (<>{doctorInfo?.numberOfReviews} đánh giá</>) : (<>0 đánh giá</>)}
+                                                                </p>
+                                                            </div>
                                                             <div className="avatar-info" style={{ marginTop: 10 }}>
                                                                 <Title level={3} style={{ marginBottom: "0" }}>{doctorInfo?.fullName}</Title>
                                                                 <p>{doctorInfo?.email}</p>

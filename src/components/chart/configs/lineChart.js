@@ -1,22 +1,10 @@
 const lineChart = {
-  series: [
-    {
-      name: "Mobile apps",
-      data: [350, 40, 300, 220, 500, 250, 400, 230, 500],
-      offsetY: 0,
-    },
-    {
-      name: "Websites",
-      data: [30, 90, 40, 140, 290, 290, 340, 230, 400],
-      offsetY: 0,
-    },
-  ],
 
   options: {
     chart: {
       width: "100%",
       height: 350,
-      type: "area",
+      type: "line",
       toolbar: {
         show: false,
       },
@@ -58,10 +46,14 @@ const lineChart = {
             "#8c8c8c",
             "#8c8c8c",
             "#8c8c8c",
+            "#8c8c8c",
+            "#8c8c8c",
+            "#8c8c8c",
           ],
         },
       },
       categories: [
+        'Jan',
         "Feb",
         "Mar",
         "Apr",
@@ -71,13 +63,15 @@ const lineChart = {
         "Aug",
         "Sep",
         "Oct",
+        "Nov",
+        "Dec",
       ],
     },
 
     tooltip: {
       y: {
         formatter: function (val) {
-          return val;
+          return val.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
         },
       },
     },

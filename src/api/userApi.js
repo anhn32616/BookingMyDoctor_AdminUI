@@ -21,6 +21,15 @@ const userApi = {
     },
     openCloseUser(id, config) {
         return http.put(`/user/open-close/${id}`, { id: id }, config)
-    }
+    },
+    getMyProfile() {
+        return http.get('/user/profile')
+    },
+    getBaseProfile() {
+        return http.get('/user/users-base-info')
+    },
+    getBaseProfileById(id) {
+        return http.get('/user/users-base-info', { params : {userId: id}})
+    },
 }
 export default userApi

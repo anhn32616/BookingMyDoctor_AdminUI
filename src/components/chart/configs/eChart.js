@@ -1,11 +1,4 @@
 const eChart = {
-  series: [
-    {
-      name: "Sales",
-      data: [450, 200, 100, 220, 500, 100, 400, 230, 500],
-      color: "#fff",
-    },
-  ],
 
   options: {
     chart: {
@@ -39,6 +32,7 @@ const eChart = {
     },
     xaxis: {
       categories: [
+        "Jan",
         "Feb",
         "Mar",
         "Apr",
@@ -48,6 +42,8 @@ const eChart = {
         "Aug",
         "Sep",
         "Oct",
+        "Nov",
+        "Dec",
       ],
       labels: {
         show: true,
@@ -56,6 +52,9 @@ const eChart = {
         maxWidth: 160,
         style: {
           colors: [
+            "#fff",
+            "#fff",
+            "#fff",
             "#fff",
             "#fff",
             "#fff",
@@ -88,6 +87,9 @@ const eChart = {
             "#fff",
             "#fff",
             "#fff",
+            "#fff",
+            "#fff",
+            "#fff",
           ],
         },
       },
@@ -96,7 +98,7 @@ const eChart = {
     tooltip: {
       y: {
         formatter: function (val) {
-          return "$ " + val + " thousands";
+          return val.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
         },
       },
     },

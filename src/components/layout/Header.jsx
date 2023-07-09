@@ -68,6 +68,9 @@ function Header({
     localStorage.removeItem('token')
     history.push('/login')
   }
+  const handleGoToMessagePage = () => {
+    history.push('/chat')
+  }
 
   return (
     <>
@@ -106,7 +109,7 @@ function Header({
                 </div>
               )}
             </div>
-            <div>
+            <div onClick={handleGoToMessagePage}>
               <Avatar style={{ cursor: 'pointer', background: '#F0F2F5' }} shape='circle' size='default' >
                 <i className="fa-solid fa-comment-dots" style={{ fontSize: 18, color: '#192843' }} />
               </Avatar>

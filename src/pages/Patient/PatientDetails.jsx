@@ -47,7 +47,7 @@ function PatientDetails() {
     const [districtSelected, setDistrictSelected] = useState();
     const [wardSelected, setWardSelected] = useState();
     const [patientInfo, setPatientInfo] = useState();
-    const [isGetDataForEdit, setIsGetDataForEdit] = useState(true);
+    let isGetDataForEdit = true;
     const [isLoading, setIsLoading] = useState(false);
 
 
@@ -62,7 +62,7 @@ function PatientDetails() {
     };
 
     useEffect(() => {
-        setIsGetDataForEdit(true);
+        isGetDataForEdit = true;
         fetchData(params.id);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -77,7 +77,7 @@ function PatientDetails() {
 
     useEffect(() => {
         if (isGetDataForEdit) {
-            setIsGetDataForEdit(false);
+            isGetDataForEdit = false;
         } else {
             setWardSelected(null);
             form.setFieldsValue({ "ward": null })

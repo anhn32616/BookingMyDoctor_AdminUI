@@ -9,9 +9,8 @@ import { useEffect, useState } from "react";
 import statisticalApi from "../../api/statisticalApi";
 import { FaClinicMedical, FaHospital, FaUserAlt, FaUserNurse } from 'react-icons/fa'
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
-import MultiBarChart from "../../components/MultiBarChart/index";
-import ProfitCompanyChart from "../../components/ProfitCompanyChart/index";
-
+import LineChart from '../../components/chart/LineChart'
+import EChart from "../../components/chart/EChart";
 
  
 function Home() {
@@ -52,7 +51,6 @@ function Home() {
       setStatisticalData(resultArr.map(result => result.data))
       setIsLoading(false)
       console.log(resultArr);
-
     })
     // eslint-disable-next-line
   }, [])
@@ -137,16 +135,16 @@ function Home() {
         </Row>
 
         <Row gutter={[24, 0]}>
-          <Col xs={24} sm={24} md={12} lg={12} xl={14} className="mb-24">
+          <Col xs={24} sm={24} md={12} lg={12} xl={12} className="mb-24">
             <Card bordered={false} className="criclebox h-full">
               {statisticalData.length > 0 && (
-                <MultiBarChart dataRevenue={statisticalData} />
+                <EChart data={statisticalData.map(item => item.doctorRevenue)}/>
               )}
             </Card>
           </Col>
-          <Col xs={24} sm={24} md={12} lg={12} xl={10} className="mb-24">
+          <Col xs={24} sm={24} md={12} lg={12} xl={12} className="mb-24">
             <Card bordered={false} className="criclebox h-full">
-              <ProfitCompanyChart dataProfitsCompany={statisticalData} />
+              <LineChart data={statisticalData.map(item => item.companyRevenue)}/>
             </Card>
           </Col>
         </Row>

@@ -3,23 +3,20 @@ import {
   Col,
   Card,
   Table,
-  Button,
   Modal,
   Select,
   DatePicker,
-  Tag,
-  Switch
+  Tag
 } from "antd";
 
 
+import { DeleteOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { toast } from 'react-toastify'
 import doctorApi from "../../api/doctorApi";
-import appointmentApi from "../../api/appointmentApi";
-import ModalSelectViolator from "../../components/appointment/ModalSelectViolator";
-import userApi from "../../api/userApi";
-import ModalAppointmentDetail from "../../components/appointment/ModalAppointmentDetail";
-import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import paymentApi from "../../api/paymentApi";
+import strftime from 'strftime'
+
 const { Option } = Select;
 
 
@@ -43,24 +40,34 @@ const columns = [
     width: 50
   },
   {
-    key: "DOCTOR",
-    title: "DOCTOR",
-    dataIndex: "doctor",
+    key: "datePayment",
+    title: "DATE PAYMENT",
+    dataIndex: "datePayment",
   },
   {
-    key: "patient",
-    dataIndex: "patient",
-    title: "PATIENT",
+    key: "doctorName",
+    dataIndex: "doctorName",
+    title: "DOCTOR NAME",
   },
   {
-    key: "DATE",
-    dataIndex: "date",
-    title: "TIME",
+    key: "doctorEmail",
+    dataIndex: "doctorEmail",
+    title: "DOCTOR EMAIL",
   },
   {
-    key: "PRICE",
-    dataIndex: "price",
-    title: "PRICE",
+    key: "monthlyFee",
+    dataIndex: "monthlyFee",
+    title: "MONTHLY FEE",
+  },
+  {
+    key: "appointmentFee",
+    dataIndex: "appointmentFee",
+    title: "APPOINTMENT FEE",
+  },
+  {
+    key: "totalFee",
+    dataIndex: "totalFee",
+    title: "TOTAL FEE",
   },
   {
     key: "status",
@@ -75,52 +82,20 @@ const columns = [
 ];
 
 
-const colorStatus = (status) => {
-  switch (status) {
-    case "Cancel":
-      return 'gray'
-    case "Pending":
-      return '#108ee9'
-    case "Confirm":
-      return '#faae2b'
-    case "Report":
-      return '#f50'
-    case 'Done':
-      return '#87d068'
-    case 'NotCome':
-      return "#001858"
-    default:
-      break
-  }
-}
 
-// Convert datetime Local to format YYYY-MM-DD HH:MM 
-function convertDateTime(dateTimeStr) {
-  const dateTime = new Date(dateTimeStr);
-  const date = dateTime.toLocaleDateString('en-GB', { day: 'numeric', month: 'numeric', year: 'numeric' });
-  const time = dateTime.toLocaleTimeString('en-GB', { hour: 'numeric', minute: 'numeric' });
-  return `${date} ${time}`;
-}
-
-
-function AppointmentsTable() {
+function PaymentTable() {
   const [dataSource, setDataSource] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalItem, setTotalItem] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
+
   const [selectedDoctor, setSelectedDoctor] = useState('');
-  const [selectedPatient, setSelectedPatient] = useState('');
   const [selectedDate, setSelectedDate] = useState();
-  const [selectedStatus, setSelectedStatus] = useState();
   const [dataDoctor, setDataDoctor] = useState([]);
-  const [dataPatient, setDataPatient] = useState([]);
-  const [appointmentId, setAppointmentId] = useState();
-  const [visibleModal, setVisibleModal] = useState(false);
-  const [visibleModalDetail, setVisibleModalDetail] = useState(false);
-  const [apppointmentDetail, setAppointmentDetail] = useState();
-  const [hiddenCancel, setHiddenCancel] = useState(false);
-  const history = useHistory()
+  const [selectedStatus, setSelectedStatus] = useState();
+
+
 
 
 
@@ -130,36 +105,32 @@ function AppointmentsTable() {
     setSelectedDate(convertedDate);
   }
 
-  const handleReport = (id) => {
-    setAppointmentId(id);
-    setVisibleModal(true);
-  }
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         var res = await doctorApi.getAllDoctor();
         setDataDoctor(res?.data?.listItem);
-        var resPatient = await userApi.getAllPatient();
-        setDataPatient(resPatient?.data?.listItem);
       } catch (error) {
         console.log(error.message);
       }
     }
-    fetchData();
+    fetchData()
   }, [])
 
 
   useEffect(() => {
     setPage(1);
     getRecords();
-    // eslint-disable-next-line
-  }, [pageSize, selectedDate, selectedDoctor, selectedPatient, selectedStatus, hiddenCancel])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageSize, selectedDate, selectedDoctor, selectedStatus])
 
   useEffect(() => {
     getRecords();
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, pageSize])
+
+
+  
 
   const onDelete = (id) => {
     Modal.confirm({
@@ -168,7 +139,7 @@ function AppointmentsTable() {
       okType: 'danger',
       cancelText: 'No',
       onOk: () => {
-        appointmentApi.deleteAppointment(id).then((response) => {
+        paymentApi.deletePayment(id).then((response) => {
           toast.success(response.message, {
             position: toast.POSITION.BOTTOM_RIGHT
           })
@@ -181,11 +152,6 @@ function AppointmentsTable() {
         });
       }
     });
-  }
-
-  const onDetail = (appointment) => {
-    setAppointmentDetail(appointment);
-    setVisibleModalDetail(true);
   }
 
   const getRecords = async () => {
@@ -201,16 +167,10 @@ function AppointmentsTable() {
       if (selectedDoctor) {
         paramQuery.doctorId = selectedDoctor;
       }
-      if (selectedPatient) {
-        paramQuery.patientId = selectedPatient;
-      }
-      if (selectedStatus) {
+      if (selectedStatus !== null && selectedStatus !== undefined) {
         paramQuery.status = selectedStatus;
       }
-      if (hiddenCancel) {
-        paramQuery.hiddenCancel = hiddenCancel;
-      }
-      let resApi = await appointmentApi.getAllAppointment(paramQuery);
+      let resApi = await paymentApi.getAllPayment(paramQuery);
       const data = [];
       if (resApi.data !== null) {
         resApi.data.listItem.forEach((item, index) => {
@@ -219,51 +179,41 @@ function AppointmentsTable() {
             id: (
               <>{item.id}</>
             ),
-            patient: (
-              <>{item.patient.fullName}</>
+            doctorName: (
+              <>{item.doctorName}</>
             ),
-            doctor: (
-              <>{item.schedule?.doctorName}</>
-            ),
-            price: (
-              <>{item.schedule?.cost?.toLocaleString('vi-VN', { style: 'currency', currency: 'VND'}) }</>
-            ),
-            date: (
-              <>{convertDateTime(item.date)}</>
+            doctorEmail: (
+              <>{item.doctorEmail}</>
             ),
             status: (
-              <Tag style={{ padding: 5, width: 80, textAlign: 'center' }} color={colorStatus(item.status)}>{item.status.toUpperCase()}</Tag>
+              <>{item.status}</>
+            ),
+            appointmentFee: (
+              <>{item.appointmentFee.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</>
+            ),
+            monthlyFee: (
+              <>{item.monthlyFee.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</>
+            ),
+            totalFee: (
+              <>{item.totalFee.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</>
+            ),
+            datePayment: (
+              <>{strftime('%d/%m/%y %Hh%M',new Date(item.datePayment))}</>
+            ),
+            status: (
+              <Tag color={item.status === true ? 'green' : 'red'} key={item.status}>
+                {item.status === true ? 'Success' : 'Failure'}
+              </Tag>
             ),
             actions: (
               <>
-                <>
-                  <Button style={{ marginRight: 10 }} onClick={() => { onDetail(item) }}>
-                    Detail
-                  </Button>
-                </>
-                {item.status === "Report" && (
-                  <>
-                    <Button type="primary" onClick={() => { handleReport(item.id) }}>
-                      Handle
-                    </Button>
-                    <Button style={{ marginLeft: 10 }} type="primary" onClick={() => {history.push(`chat/${item.patient.id}`)}}>
-                      Chat
-                    </Button>
-                  </>
-                )}
-                {item.status === "Cancel" &&
-                  (
-                    <>
-                      <Button type="danger" onClick={() => { onDelete(item.id) }}>
-                        Delete
-                      </Button>
-                    </>
-                  )}
+                <DeleteOutlined onClick={() => onDelete(item.id)} style={{ fontSize: 18, color: "red", marginLeft: 12, cursor: "pointer" }}></DeleteOutlined>
               </>
             )
           })
         })
       }
+      console.log(data);
       setDataSource(data);
       setTotalItem(resApi.data.totalCount);
       setLoading(false);
@@ -272,13 +222,6 @@ function AppointmentsTable() {
     }
   }
 
-  const optionHiddenCancel = () => (
-    <div className="filter-item" style={{marginRight: 20}}>
-      <div className="filter-item-label" style={{marginBottom: 17}}>HIDDEN CANCEL</div>
-      <Switch style={{position: 'relative', top: '-7px', width: 30}} checked={hiddenCancel} onChange={() => { setHiddenCancel(!hiddenCancel) }} />
-    </div>
-  )
-
   const filterDoctor = () => (
     <div className="filter-item">
       <div className="filter-item-label">DOCTOR</div>
@@ -286,7 +229,7 @@ function AppointmentsTable() {
         showSearch
         placeholder="Select Doctor"
         allowClear
-        style={{ width: 210 }}
+        style={{ width: 300 }}
         onChange={(value) => { setSelectedDoctor(value) }}
         optionFilterProp="children"
         filterOption={(input, option) =>
@@ -296,29 +239,6 @@ function AppointmentsTable() {
         {dataDoctor?.map((doctor) => (
           <Option value={doctor.id} key={doctor.id} label={doctor.user.fullName}>
             {doctor.user.fullName}
-          </Option>
-        ))}
-      </Select>
-    </div>
-  )
-
-  const filterPatient = () => (
-    <div className="filter-item">
-      <div className="filter-item-label">PATIENT</div>
-      <Select
-        showSearch
-        placeholder="Select Patient"
-        allowClear
-        style={{ width: 210 }}
-        onChange={(value) => { setSelectedPatient(value) }}
-        optionFilterProp="children"
-        filterOption={(input, option) =>
-          (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-        }
-      >
-        {dataPatient?.map((patient) => (
-          <Option value={patient.id} key={patient.id} label={patient.fullName}>
-            {patient.fullName}
           </Option>
         ))}
       </Select>
@@ -346,7 +266,6 @@ function AppointmentsTable() {
       />
     </div>
   )
-
   const filterStatus = () => (
     <div className="filter-item">
       <div className="filter-item-label">STATUS</div>
@@ -361,28 +280,21 @@ function AppointmentsTable() {
           (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
         }
       >
-        <Option value={"Cancel"} key={"Cancel"}>
-          Cancel
+        <Option value={true} key={true}>
+          Success
         </Option>
-        <Option value={"Pending"} key={"Pending"}>
-          Pending
-        </Option>
-        <Option value={"Confirm"} key={"Confirm"}>
-          Confirm
-        </Option>
-        <Option value={"Done"} key={"Done"}>
-          Done
-        </Option>
-        <Option value={"Report"} key={"Report"}>
-          Report
-        </Option>
-        <Option value={"NotCome"} key={"NotCome"}>
-          NotCome
+        <Option value={false} key={false}>
+          Failure
         </Option>
       </Select>
     </div>
   )
 
+
+
+
+
+  
 
   return (
     <>
@@ -394,13 +306,11 @@ function AppointmentsTable() {
               className="criclebox tablespace mb-24"
             >
               <div style={HeaderTableStyles}>
-                <span style={{ fontSize: 20, fontWeight: 600 }}>List Appointment</span>
+                <span style={{ fontSize: 20, fontWeight: 600 }}>List payment</span>
                 <div className="filter" style={{ display: "flex", alignItems: "center" }}>
-                  {optionHiddenCancel()}
                   {filterDate()}
-                  {filterStatus()}
                   {filterDoctor()}
-                  {filterPatient()}
+                  {filterStatus()}
                 </div>
               </div>
               <div className="table-responsive">
@@ -422,15 +332,15 @@ function AppointmentsTable() {
                   }}
                   className="ant-border-space"
                 />
+
               </div>
             </Card>
           </Col>
         </Row>
-        <ModalAppointmentDetail modalVisible={visibleModalDetail} setModalVisible={setVisibleModalDetail} appointment={apppointmentDetail} />
-        <ModalSelectViolator visible={visibleModal} setVisible={setVisibleModal} appointmentId={appointmentId} reloadData={getRecords} />
+
       </div >
     </>
   );
 }
 
-export default AppointmentsTable;
+export default PaymentTable;

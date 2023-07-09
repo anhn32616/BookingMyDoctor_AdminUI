@@ -28,7 +28,7 @@ function Main({ children }) {
     }
   }, [pathname]);
 
-  if(pathname === "login") return null;
+  if(pathname === "login" || pathname.startsWith('chat')) return null;
 
   return (
     <Layout

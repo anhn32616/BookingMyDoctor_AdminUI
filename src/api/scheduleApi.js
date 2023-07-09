@@ -16,6 +16,6 @@ const scheduleApi = {
     },
     deleteSchedule(id, config) {
         return http.delete(`/schedule/${id}`, { id: id }, config)
-    }
+    }   
 }
 export default scheduleApi

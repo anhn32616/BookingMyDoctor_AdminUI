@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal, Card } from 'antd';
 import appointmentApi from '../../api/appointmentApi';
 import { toast } from 'react-toastify';
 import patientImage from '../../assets/images/patient-removebg-preview.png'
+import { addNotification } from '../../utils/firebase/NotificationFb';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 
 const ModalSelectViolator = ({ visible, setVisible, appointmentId, reloadData }) => {
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleOk = () => {
         setVisible(false);
@@ -15,25 +19,31 @@ const ModalSelectViolator = ({ visible, setVisible, appointmentId, reloadData })
     };
 
     const handleReport = async (violator) => {
+        setIsLoading(true);
         try {
             var res = await appointmentApi.handleReportAppointment(appointmentId, violator);     
             toast.success(res.message, {
                 position: toast.POSITION.BOTTOM_RIGHT
               })
+            res.data.forEach(item => {
+                addNotification(item.userId, item.message)
+            });
         } catch (error) {
             toast.error(error.message, {
                 position: toast.POSITION.BOTTOM_RIGHT
               })
         }
+        setIsLoading(false);
         reloadData();
         setVisible(false);
     }
 
     return (
         <div>
+            {isLoading && (<LoadingSpinner/>)}
             <Modal
                 title="Choose Violators"
-                visible={visible}
+                open={visible}
                 onOk={handleOk}
                 onCancel={handleCancel}
                 footer= {<></>}
